@@ -2,11 +2,13 @@ let express = require("express");
 let bodyParser = require("body-parser");
 let ejs = require("ejs");
 
+let userSchema = require("./database.js");
 let app = express();
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
+
 
 app.get("/", function(req, res) {
     res.render("home");
