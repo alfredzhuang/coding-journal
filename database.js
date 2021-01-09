@@ -9,4 +9,12 @@ let userSchema = new mongoose.Schema({
     password: String,
 })
 
-module.exports = { mongoose, userSchema };
+let postSchema = new mongoose.Schema({
+    userID: String,
+    date: String,
+    title: String,
+    content: String
+})
+let Post = mongoose.model("Post", postSchema);
+
+module.exports = { mongoose, userSchema, Post };

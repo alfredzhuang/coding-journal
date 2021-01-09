@@ -6,7 +6,7 @@ let session = require("express-session");
 let passport = require("passport");
 let passportLocalMongoose = require("passport-local-mongoose");
 
-let { mongoose, userSchema } = require("./database.js");
+let { mongoose, userSchema, Post } = require("./database.js");
 let app = express();
 
 app.use(express.static("public"));
@@ -85,6 +85,20 @@ app.post("/login", function(req, res) {
             passport.authenticate("local")(req, res, function() {
                 res.redirect("/browse");
             });
+        }
+    });
+});
+
+app.post("/create", function(req, res) {
+    let post = new Post({
+        userID: req.user._id,
+        date: req.body.postDate,
+        title: req.body.postTitle,
+        content: req.body.postContent
+    });
+    post.save(function(err) {
+        if(!err) {
+            res.redirect("/profile");
         }
     });
 });

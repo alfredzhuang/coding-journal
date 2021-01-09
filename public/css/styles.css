@@ -6,6 +6,11 @@
     height: 100vh;
 }
 
+.create-container {
+    width: 30%;
+    padding-left: 25px;
+}
+
 .buttons {
     padding-top: 50px;
 }
