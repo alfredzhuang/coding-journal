@@ -1,4 +1,15 @@
 <%- include("partials/navbar"); -%>
 
+<div class="row">
+    <% posts.forEach(function(post) { %>
+        <div class="columns col-lg-2 col-md-4 col-sm-6">
+            <div class="card">
+                <div class="text">
+                    <h1><%=post.date%></h1>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+</div>
 
 <%- include("partials/footer"); -%>

@@ -1,3 +1,4 @@
+let { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 let express = require("express");
 let bodyParser = require("body-parser");
@@ -41,7 +42,9 @@ app.get("/register", function(req, res) {
 
 app.get("/browse", function(req, res) {
     if(req.isAuthenticated()) {
-        res.render("browse");
+        Post.find({userID: req.user._id}, function(err, posts) {
+            res.render("browse", {posts: posts});
+        })
     } else {
         res.redirect("/");
     }
@@ -92,16 +95,24 @@ app.post("/login", function(req, res) {
 app.post("/create", function(req, res) {
     let post = new Post({
         userID: req.user._id,
+        postID: uuidv4(),
         date: req.body.postDate,
         title: req.body.postTitle,
         content: req.body.postContent
     });
     post.save(function(err) {
         if(!err) {
-            res.redirect("/profile");
+            res.redirect("/browse");
         }
     });
 });
+
+app.get("/posts/:postID", function(req, res) {
+    let requestedPostID = req.params.postID;
+    Post.findOne({postID: "655a7147-0a5e-47d9-b136-7965548bc00b"}, function(err, post) {
+        res.render("post", {post: post});
+    })
+})
 
 app.listen(3000, function() {
     console.log("Server started on port 3000");

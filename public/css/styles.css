@@ -1,9 +1,21 @@
-.home-container, .register-container, .login-container {
+.home-container, .register-container, .login-container, .card .text {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+.row {
+    padding: 0px 35px;
+}
+
+.card {
+    height: 350px;
+}
+
+.columns {
+    padding-bottom: 35px;
 }
 
 .create-container {

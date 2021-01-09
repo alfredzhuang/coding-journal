@@ -11,6 +11,7 @@ let userSchema = new mongoose.Schema({
 
 let postSchema = new mongoose.Schema({
     userID: String,
+    postID: String,
     date: String,
     title: String,
     content: String
