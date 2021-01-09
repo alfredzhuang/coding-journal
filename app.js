@@ -109,7 +109,7 @@ app.post("/create", function(req, res) {
 
 app.get("/posts/:postID", function(req, res) {
     let requestedPostID = req.params.postID;
-    Post.findOne({postID: "655a7147-0a5e-47d9-b136-7965548bc00b"}, function(err, post) {
+    Post.findOne({postID: requestedPostID}, function(err, post) {
         res.render("post", {post: post});
     })
 })
