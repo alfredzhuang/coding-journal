@@ -1,5 +1,15 @@
 <%- include("partials/navbar"); -%>
 
-<h1><%=post.title%></h1>
+<div class="container">
+    <h1><%=post.title%></h1>
+    <p><%=post.content%></p>
+    <div class="row">
+        <a class="btn btn-secondary btn-lg left" href="/posts/<%=post.postID%>/edit">Edit</a>
+        <form action="/delete" method="post">
+            <input type="hidden" name="postID" value="<%=post.postID%>">
+            <button class="btn btn-danger btn-lg" type="submit" name="button">Delete</button>
+        </form>
+    </div>
+</div>
 
 <%- include("partials/footer"); -%>

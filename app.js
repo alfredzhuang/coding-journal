@@ -32,51 +32,11 @@ app.get("/", function(req, res) {
     }
 });
 
-app.get("/login", function(req, res) {
+app.route("/login")
+.get(function(req, res) {
     res.render("login");
-});
-
-app.get("/register", function(req, res) {
-    res.render("register");
-});
-
-app.get("/browse", function(req, res) {
-    if(req.isAuthenticated()) {
-        Post.find({userID: req.user._id}, function(err, posts) {
-            res.render("browse", {posts: posts});
-        })
-    } else {
-        res.redirect("/");
-    }
-});
-
-app.get("/profile", function(req, res) {
-    res.render("profile");
-});
-
-app.get("/create", function(req, res) {
-    res.render("create");
-});
-
-app.get("/logout", function(req, res) {
-    req.logout();
-    res.redirect("/");
 })
-
-app.post("/register", function(req, res) {
-    User.register({username: req.body.username}, req.body.password, function(err, user) {
-        if(err) {
-            console.log(err);
-            res.redirect("/register");
-        } else {
-            passport.authenticate("local")(req, res, function() {
-                res.redirect("/browse");
-            }) 
-        }
-    })
-});
-
-app.post("/login", function(req, res) {
+.post(function(req, res) {
     let user = new User({
         username: req.body.username,
         password: req.body.password
@@ -91,6 +51,46 @@ app.post("/login", function(req, res) {
         }
     });
 });
+
+app.route("/register")
+.get(function(req, res) {
+    res.render("register");
+})
+.post(function(req, res) {
+    User.register({username: req.body.username}, req.body.password, function(err, user) {
+        if(err) {
+            console.log(err);
+            res.redirect("/register");
+        } else {
+            passport.authenticate("local")(req, res, function() {
+                res.redirect("/browse");
+            }) 
+        }
+    })
+});
+
+app.get("/browse", function(req, res) {
+    if(req.isAuthenticated()) {
+        Post.find({userID: req.user._id}, function(err, posts) {
+            res.render("browse", {posts: posts});
+        })
+    } else {
+        res.redirect("/");
+    }
+})
+
+app.get("/profile", function(req, res) {
+    res.render("profile");
+});
+
+app.get("/create", function(req, res) {
+    res.render("create");
+});
+
+app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/");
+})
 
 app.post("/create", function(req, res) {
     let post = new Post({
@@ -111,8 +111,31 @@ app.get("/posts/:postID", function(req, res) {
     let requestedPostID = req.params.postID;
     Post.findOne({postID: requestedPostID}, function(err, post) {
         res.render("post", {post: post});
-    })
+    });
+});
+
+app.get("/posts/:postID/edit", function(req, res) {
+    let requestedPostID = req.params.postID;
+    Post.findOne({postID: requestedPostID}, function(err, post) {
+        res.render("edit", {post: post});
+    });
+});
+
+app.post("/edit", function(req, res) {
+    Post.updateOne(
+        { postID: req.body.postID },
+        { date: req.body.postDate, title: req.body.postTitle, content: req.body.postContent },
+        function(err) {
+            res.redirect("/posts/" + req.body.postID);
+        })
 })
+
+app.post("/delete", function(req, res) {
+    let requestedPostID = req.body.postID;
+    Post.deleteOne({ postID: requestedPostID }, function(err) {
+        res.redirect("/browse");
+    })
+});
 
 app.listen(3000, function() {
     console.log("Server started on port 3000");

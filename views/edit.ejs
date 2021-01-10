@@ -1,0 +1,17 @@
+<%- include("partials/navbar"); -%>
+<div class="container">
+    <h1>Edit</h1>
+    <form action="/edit" method="post">
+        <div class="form-group">
+            <input type="hidden" name="postID" value=<%=post.postID%>>
+            <label>Date</label>
+            <input class="form-control" type="date" name="postDate" value=<%=post.date%>>
+            <label>Title</label>
+            <input class="form-control" type="text" name="postTitle" autocomplete=off value=<%=post.title%>>
+            <label>Post</label>
+            <textarea class="form-control" name="postContent" rows="5" cols="30"><%=post.content%></textarea>
+        </div>
+        <button class="btn btn-success" type="submit" name="button">Save</button>
+    </form>
+</div>
+<%- include("partials/footer"); -%>
