@@ -3,13 +3,18 @@
 <div class="row">
     <% posts.forEach(function(post) { %>
         <div class="columns col-lg-2 col-md-4 col-sm-6">
-            <a href="/posts/<%=post.postID%>">
-                <div class="card">
-                    <div class="text">
-                        <h1><%=post.date%></h1>
-                    </div>
+            <div class="card">
+            <img class="card-img-top" src="images/pic01.jpg">
+            <div class="card-body">
+                <h5 class="card-text"><%=post.date%></h5>
+                <h6 class="card-text"><%=post.title%></h6>
+                <p class="card-text"><%=post.content.substring(0,15)%></p>
+                <div>
+                    <a class="btn btn-sm btn-outline-secondary" href="/posts/<%=post.postID%>">View</a>
                 </div>
-            </a>
+
+            </div>
+            </div>
         </div>
     <% }) %>
 </div>
