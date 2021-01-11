@@ -108,17 +108,33 @@ app.post("/create", function(req, res) {
 });
 
 app.get("/posts/:postID", function(req, res) {
-    let requestedPostID = req.params.postID;
-    Post.findOne({postID: requestedPostID}, function(err, post) {
-        res.render("post", {post: post});
-    });
+    if(req.user) {
+        let requestedPostID = req.params.postID;
+        Post.findOne({$and: [{postID: requestedPostID}, {userID: req.user._id}]}, function(err, post) {
+            if(post) {
+                res.render("post", {post: post});
+            } else {
+                res.redirect("/browse");
+            }
+        });
+    } else {
+        res.redirect("/");
+    }
 });
 
 app.get("/posts/:postID/edit", function(req, res) {
-    let requestedPostID = req.params.postID;
-    Post.findOne({postID: requestedPostID}, function(err, post) {
-        res.render("edit", {post: post});
-    });
+    if(req.user) {
+        let requestedPostID = req.params.postID;
+        Post.findOne({postID: requestedPostID}, function(err, post) {
+            if(post) {
+                res.render("edit", {post: post});
+            } else {
+                res.redirect("/browse");
+            }
+        });
+    } else {
+        res.redirect("/");
+    }
 });
 
 app.post("/edit", function(req, res) {
@@ -135,6 +151,10 @@ app.post("/delete", function(req, res) {
     Post.deleteOne({ postID: requestedPostID }, function(err) {
         res.redirect("/browse");
     })
+});
+
+app.get("*", function(req, res) {
+    res.send("404 error message");
 });
 
 app.listen(3000, function() {

@@ -7,7 +7,16 @@ mongoose.set("useCreateIndex", true);
 let userSchema = new mongoose.Schema({
     email: String,
     password: String,
+    // createdAt: String,
+    // entries: Number,
 })
+
+let profileSchema = new mongoose.Schema({
+    createdAt: String,
+    entries: Number,
+    // profilePicture: String,
+})
+let Profile = mongoose.model("Profile", profileSchema);
 
 let postSchema = new mongoose.Schema({
     userID: String,
@@ -18,4 +27,4 @@ let postSchema = new mongoose.Schema({
 })
 let Post = mongoose.model("Post", postSchema);
 
-module.exports = { mongoose, userSchema, Post };
+module.exports = { mongoose, userSchema, Post, Profile };
