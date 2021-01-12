@@ -65,12 +65,6 @@ app
       username: req.body.username,
       password: req.body.password,
     });
-    // req.login(user, function (err) {
-    //     passport.authenticate("local")(req, res, function () {
-    //       res.redirect("/browse");
-    //     });
-    //   }
-    // );
     req.login(user, function(err) {
         passport.authenticate("local", (err, user, info) => {
             if(!user && info) {
@@ -99,11 +93,14 @@ app
       if (!errors.isEmpty()) {
         let alert = errors.array();
         res.render("register", { alert: alert });
-      } else if(User.findOne({username: req.body.username})) {
-          res.render("register", { alert: [{msg: "Username does not exist"}]});
-      }
+      } 
+      User.findOne({username : req.body.username}, function(err, user) {
+        if(user) {
+            res.render("register", { alert: [{msg: "Username already exists"}]});
+        } 
+    })
       User.register(
-        { username: req.body.username },
+        { username: req.body.username, createdAt: new Date().toLocaleDateString("en-US"), entries: 0 },
         req.body.password,
         function (err, user) {
           if (err) {

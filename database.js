@@ -7,8 +7,8 @@ mongoose.set("useCreateIndex", true);
 let userSchema = new mongoose.Schema({
     email: String,
     password: String,
-    // createdAt: String,
-    // entries: Number,
+    createdAt: String,
+    entries: Number,
 })
 
 let profileSchema = new mongoose.Schema({
