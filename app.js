@@ -7,6 +7,7 @@ let ejs = require("ejs");
 let session = require("express-session");
 let passport = require("passport");
 let passportLocalMongoose = require("passport-local-mongoose");
+let flash = require("express-flash");
 let isLoggedIn = require("./isLoggedIn");
 
 let { mongoose, userSchema, Post } = require("./database.js");
@@ -23,8 +24,14 @@ app.use(
     cookie: { maxAge: 60000 * 60 * 24 * 365 * 10 },
   })
 );
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(function (req, res, next) {
+  res.locals.success_msg = req.flash("success_msg");
+  next();
+});
 
 userSchema.plugin(passportLocalMongoose);
 let User = new mongoose.model("User", userSchema);
@@ -145,6 +152,7 @@ app.get("/create", isLoggedIn, function (req, res) {
 
 app.get("/logout", function (req, res) {
   req.logout();
+  req.flash("success_msg", "You are logged out");
   res.redirect("/");
 });
 
@@ -184,13 +192,16 @@ app.get("/posts/:postID", isLoggedIn, function (req, res) {
 app.get("/posts/:postID/edit", isLoggedIn, function (req, res) {
   if (req.user) {
     let requestedPostID = req.params.postID;
-    Post.findOne({ postID: requestedPostID }, function (err, post) {
-      if (post) {
-        res.render("edit", { post: post });
-      } else {
-        res.redirect("/browse");
+    Post.findOne(
+      { $and: [{ postID: requestedPostID }, { userID: req.user._id }] },
+      function (err, post) {
+        if (post) {
+          res.render("edit", { post: post });
+        } else {
+          res.redirect("/browse");
+        }
       }
-    });
+    );
   } else {
     res.redirect("/");
   }
