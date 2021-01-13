@@ -7,6 +7,7 @@ let ejs = require("ejs");
 let session = require("express-session");
 let passport = require("passport");
 let passportLocalMongoose = require("passport-local-mongoose");
+let isLoggedIn = require("./isLoggedIn");
 
 let { mongoose, userSchema, Post } = require("./database.js");
 let app = express();
@@ -45,36 +46,43 @@ app
   .get(function (req, res) {
     res.render("login");
   })
-  .post([
-    check("username", "Email is not valid").isEmail().normalizeEmail(),
-    check("password", "Password must be 5+ characters long")
-      .exists()
-      .isLength({ min: 5 }),
-  ], function (req, res) {
-    let errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      let alert = errors.array();
-      res.render("login", { alert: alert });
-    }
-    User.findOne({username : req.body.username}, function(err, user) {
-        if(!user) {
-            res.render("login", { alert: [{msg: "Username or password is incorrect"}]});
-        } 
-    })
-    let user = new User({
-      username: req.body.username,
-      password: req.body.password,
-    });
-    req.login(user, function(err) {
+  .post(
+    [
+      check("username", "Email is not valid").isEmail().normalizeEmail(),
+      check("password", "Password must be 5+ characters long")
+        .exists()
+        .isLength({ min: 5 }),
+    ],
+    function (req, res) {
+      let errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        let alert = errors.array();
+        res.render("login", { alert: alert });
+      }
+      User.findOne({ username: req.body.username }, function (err, user) {
+        if (!user) {
+          res.render("login", {
+            alert: [{ msg: "Username or password is incorrect" }],
+          });
+        }
+      });
+      let user = new User({
+        username: req.body.username,
+        password: req.body.password,
+      });
+      req.login(user, function (err) {
         passport.authenticate("local", (err, user, info) => {
-            if(!user && info) {
-                res.render("login", { alert: [{msg: "Username or password is incorrect"}]})
-            } else {
-                res.redirect("/browse");
-            }
+          if (!user && info) {
+            res.render("login", {
+              alert: [{ msg: "Username or password is incorrect" }],
+            });
+          } else {
+            res.redirect("/browse");
+          }
         })(req, res);
-    })
-  });
+      });
+    }
+  );
 
 app
   .route("/register")
@@ -93,14 +101,20 @@ app
       if (!errors.isEmpty()) {
         let alert = errors.array();
         res.render("register", { alert: alert });
-      } 
-      User.findOne({username : req.body.username}, function(err, user) {
-        if(user) {
-            res.render("register", { alert: [{msg: "Username already exists"}]});
-        } 
-    })
+      }
+      User.findOne({ username: req.body.username }, function (err, user) {
+        if (user) {
+          res.render("register", {
+            alert: [{ msg: "Username already exists" }],
+          });
+        }
+      });
       User.register(
-        { username: req.body.username, createdAt: new Date().toLocaleDateString("en-US"), entries: 0 },
+        {
+          username: req.body.username,
+          createdAt: new Date().toLocaleDateString("en-US"),
+          entries: 0,
+        },
         req.body.password,
         function (err, user) {
           if (err) {
@@ -115,21 +129,17 @@ app
     }
   );
 
-app.get("/browse", function (req, res) {
-  if (req.isAuthenticated()) {
-    Post.find({ userID: req.user._id }, function (err, posts) {
-      res.render("browse", { posts: posts });
-    });
-  } else {
-    res.redirect("/");
-  }
+app.get("/browse", isLoggedIn, function (req, res) {
+  Post.find({ userID: req.user._id }, function (err, posts) {
+    res.render("browse", { posts: posts });
+  });
 });
 
-app.get("/profile", function (req, res) {
+app.get("/profile", isLoggedIn, function (req, res) {
   res.render("profile");
 });
 
-app.get("/create", function (req, res) {
+app.get("/create", isLoggedIn, function (req, res) {
   res.render("create");
 });
 
@@ -153,7 +163,7 @@ app.post("/create", function (req, res) {
   });
 });
 
-app.get("/posts/:postID", function (req, res) {
+app.get("/posts/:postID", isLoggedIn, function (req, res) {
   if (req.user) {
     let requestedPostID = req.params.postID;
     Post.findOne(
@@ -171,7 +181,7 @@ app.get("/posts/:postID", function (req, res) {
   }
 });
 
-app.get("/posts/:postID/edit", function (req, res) {
+app.get("/posts/:postID/edit", isLoggedIn, function (req, res) {
   if (req.user) {
     let requestedPostID = req.params.postID;
     Post.findOne({ postID: requestedPostID }, function (err, post) {

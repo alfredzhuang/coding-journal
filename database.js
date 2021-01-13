@@ -9,16 +9,12 @@ let userSchema = new mongoose.Schema({
     password: String,
     createdAt: String,
     entries: Number,
+    // picture: String,
+    // posts: Post[],
 })
-
-let profileSchema = new mongoose.Schema({
-    createdAt: String,
-    entries: Number,
-    // profilePicture: String,
-})
-let Profile = mongoose.model("Profile", profileSchema);
 
 let postSchema = new mongoose.Schema({
+    //creator: User,
     userID: String,
     postID: String,
     date: String,
@@ -27,4 +23,4 @@ let postSchema = new mongoose.Schema({
 })
 let Post = mongoose.model("Post", postSchema);
 
-module.exports = { mongoose, userSchema, Post, Profile };
+module.exports = { mongoose, userSchema, Post };
