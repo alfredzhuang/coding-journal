@@ -14,12 +14,13 @@ let userSchema = new mongoose.Schema({
 })
 
 let postSchema = new mongoose.Schema({
-    //creator: User,
     userID: String,
     postID: String,
     date: String,
     title: String,
-    content: String
+    content: String,
+    picture: Buffer,
+    pictureType: String
 })
 let Post = mongoose.model("Post", postSchema);
 

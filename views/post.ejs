@@ -3,6 +3,7 @@
 <div class="container">
     <h1><%=post.title%></h1>
     <p><%=post.content%></p>
+    <img height="150" width="300" src=<%=`data:${post.pictureType};charset=utf-8;base64,${post.picture.toString('base64')}`%>>
     <div class="row">
         <a class="btn btn-secondary btn-lg left" href="/posts/<%=post.postID%>/edit">Edit</a>
         <form action="/delete" method="post">

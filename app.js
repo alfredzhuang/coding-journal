@@ -15,7 +15,8 @@ let app = express();
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: "50mb"}));
+app.use(bodyParser.urlencoded({ limit:"50mb", extended: true }));
 app.use(
   session({
     secret: process.env.SECRET,
@@ -156,7 +157,7 @@ app.get("/logout", function (req, res) {
   res.redirect("/");
 });
 
-app.post("/create", function (req, res) {
+app.post("/create", isLoggedIn, function (req, res) {
   let post = new Post({
     userID: req.user._id,
     postID: uuidv4(),
@@ -164,12 +165,24 @@ app.post("/create", function (req, res) {
     title: req.body.postTitle,
     content: req.body.postContent,
   });
+  savePicture(post, req.body.picture);
   post.save(function (err) {
     if (!err) {
       res.redirect("/browse");
     }
   });
 });
+
+let imageTypes = ['image/jpeg', 'image/png', 'images/gif'];
+
+function savePicture(post, pictureEncoded) {
+  if(pictureEncoded == null) return;
+  let picture = JSON.parse(pictureEncoded);
+  if(picture != null && imageTypes.includes(picture.type)) {
+    post.picture = new Buffer.from(picture.data, 'base64');
+    post.pictureType = picture.type;
+  } 
+}
 
 app.get("/posts/:postID", isLoggedIn, function (req, res) {
   if (req.user) {
