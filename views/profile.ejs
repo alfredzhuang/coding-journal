@@ -2,7 +2,9 @@
 
 <div class="container">
     <h1>Hi, <%=user.username%></h1>
+    <% if(typeof user.pictureType != "undefined") { %>
     <img src=<%=`data:${user.pictureType};charset=utf-8;base64,${user.picture.toString('base64')}`%>>
+    <% } %>
     <p>Join date: <%=user.createdAt%></p>
     <p>Number of Journals: <%=user.entries%></p>
 </div>
