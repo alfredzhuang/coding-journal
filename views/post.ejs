@@ -1,15 +1,16 @@
 <%- include("partials/navbar"); -%>
 
-<div class="container">
+    <div class="container">
+        <img height="150" width="225" src=<%=`data:${post.pictureType};charset=utf-8;base64,${post.picture.toString('base64')}`%>>
     <h1><%=post.title%></h1>
     <p><%=post.content%></p>
-    <img height="150" width="300" src=<%=`data:${post.pictureType};charset=utf-8;base64,${post.picture.toString('base64')}`%>>
     <div class="row">
-        <a class="btn btn-secondary btn-lg left" href="/posts/<%=post.postID%>/edit">Edit</a>
-        <form action="/delete" method="post">
-            <input type="hidden" name="postID" value="<%=post.postID%>">
-            <button class="btn btn-danger btn-lg" type="submit" name="button">Delete</button>
-        </form>
+            <a class="btn btn-secondary btn-lg left" href="/posts/<%=post.postID%>/edit">Edit</a>
+            <form action="/delete" method="post">
+                <input type="hidden" name="postID" value="<%=post.postID%>">
+                <input type="hidden" name="userID" value="<%=post.userID%>">
+                <button class="btn btn-danger btn-lg" type="submit" name="button">Delete</button>
+        </div>
     </div>
 </div>
 

@@ -130,7 +130,6 @@ app
         {
           username: req.body.username,
           createdAt: new Date().toLocaleDateString("en-US"),
-          entries: 0,
           picture: pic,
           pictureType: picType,
         },
@@ -221,20 +220,12 @@ app.get("/posts/:postID/edit", isLoggedIn, function (req, res) {
 });
 
 app.post("/edit", function (req, res) {
-  let pic, picType;
-  if (req.body.picture !== "") {
-    let picture = JSON.parse(req.body.picture);
-    pic = new Buffer.from(picture.data, "base64");
-    picType = picture.type;
-  }
   Post.updateOne(
     { postID: req.body.postID },
     {
       date: req.body.postDate,
       title: req.body.postTitle,
       content: req.body.postContent,
-      picture: pic,
-      pictureType: picType,
     },
     function (err) {
       res.redirect("/posts/" + req.body.postID);
@@ -244,6 +235,7 @@ app.post("/edit", function (req, res) {
 
 app.post("/delete", function (req, res) {
   let requestedPostID = req.body.postID;
+  let userID = req.body.userID;
   Post.deleteOne({ postID: requestedPostID }, function (err) {
     res.redirect("/browse");
   });

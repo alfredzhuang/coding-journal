@@ -7,7 +7,8 @@
 }
 
 .row {
-    padding: 0px 35px;
+    padding: 0 35px;
+    margin-top: 10px;
 }
 
 .card {
@@ -20,4 +21,8 @@
 
 .buttons {
     padding-top: 50px;
+}
+
+.profile-img {
+    border-radius: 2%;
 }
