@@ -15,8 +15,8 @@ let app = express();
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
-app.use(bodyParser.json({limit: "50mb"}));
-app.use(bodyParser.urlencoded({ limit:"50mb", extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(
   session({
     secret: process.env.SECRET,
@@ -99,7 +99,10 @@ app
   })
   .post(
     [
-      check("username", "Email is not valid").isEmail().normalizeEmail(),
+      check("username", "Email is not valid")
+        .exists()
+        .isEmail()
+        .normalizeEmail(),
       check("password", "Password must be 5+ characters long")
         .exists()
         .isLength({ min: 5 }),
@@ -117,11 +120,19 @@ app
           });
         }
       });
+      let pic, picType;
+      if (req.body.picture !== "") {
+        let picture = JSON.parse(req.body.picture);
+        pic = new Buffer.from(picture.data, "base64");
+        picType = picture.type;
+      }
       User.register(
         {
           username: req.body.username,
           createdAt: new Date().toLocaleDateString("en-US"),
           entries: 0,
+          picture: pic,
+          pictureType: picType,
         },
         req.body.password,
         function (err, user) {
@@ -144,17 +155,13 @@ app.get("/browse", isLoggedIn, function (req, res) {
 });
 
 app.get("/profile", isLoggedIn, function (req, res) {
-  res.render("profile");
+  User.findOne({_id: req.user._id}, function(err, user) {
+    res.render("profile", {user: user})
+  })
 });
 
 app.get("/create", isLoggedIn, function (req, res) {
   res.render("create");
-});
-
-app.get("/logout", function (req, res) {
-  req.logout();
-  req.flash("success_msg", "You are logged out");
-  res.redirect("/");
 });
 
 app.post("/create", isLoggedIn, function (req, res) {
@@ -165,24 +172,17 @@ app.post("/create", isLoggedIn, function (req, res) {
     title: req.body.postTitle,
     content: req.body.postContent,
   });
-  savePicture(post, req.body.picture);
+  if (req.body.picture !== "") {
+    let picture = JSON.parse(req.body.picture);
+    post.picture = new Buffer.from(picture.data, "base64");
+    post.pictureType = picture.type;
+  }
   post.save(function (err) {
     if (!err) {
       res.redirect("/browse");
     }
   });
 });
-
-let imageTypes = ['image/jpeg', 'image/png', 'images/gif'];
-
-function savePicture(post, pictureEncoded) {
-  if(pictureEncoded == null) return;
-  let picture = JSON.parse(pictureEncoded);
-  if(picture != null && imageTypes.includes(picture.type)) {
-    post.picture = new Buffer.from(picture.data, 'base64');
-    post.pictureType = picture.type;
-  } 
-}
 
 app.get("/posts/:postID", isLoggedIn, function (req, res) {
   if (req.user) {
@@ -221,12 +221,20 @@ app.get("/posts/:postID/edit", isLoggedIn, function (req, res) {
 });
 
 app.post("/edit", function (req, res) {
+  let pic, picType;
+  if (req.body.picture !== "") {
+    let picture = JSON.parse(req.body.picture);
+    pic = new Buffer.from(picture.data, "base64");
+    picType = picture.type;
+  }
   Post.updateOne(
     { postID: req.body.postID },
     {
       date: req.body.postDate,
       title: req.body.postTitle,
       content: req.body.postContent,
+      picture: pic,
+      pictureType: picType,
     },
     function (err) {
       res.redirect("/posts/" + req.body.postID);
@@ -239,6 +247,12 @@ app.post("/delete", function (req, res) {
   Post.deleteOne({ postID: requestedPostID }, function (err) {
     res.redirect("/browse");
   });
+});
+
+app.get("/logout", function (req, res) {
+  req.logout();
+  req.flash("success_msg", "You are logged out");
+  res.redirect("/");
 });
 
 app.get("*", function (req, res) {

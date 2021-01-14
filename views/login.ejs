@@ -1,25 +1,23 @@
 <%- include("partials/header"); -%>
 
 <div class="login-container">
-    <% if(typeof alert != "undefined") { %> <% alert.forEach(function(error) { %>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <%=error.msg%>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <% }) %> <% } %>
-    <form action="/login" method="POST">
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" name="username">
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" name="password" autocomplete=off>
-        </div>
-        <button type="submit" class="btn btn-dark">Login</button>
-    </form>
+  <%- include("partials/alerts"); -%>
+  <form action="/login" method="POST">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" name="username" />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        name="password"
+        autocomplete="off"
+      />
+    </div>
+    <button type="submit" class="btn btn-dark">Login</button>
+  </form>
 </div>
 
 <%- include("partials/footer"); -%>
