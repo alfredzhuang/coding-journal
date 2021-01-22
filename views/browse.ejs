@@ -1,22 +1,26 @@
 <%- include("partials/navbar"); -%>
 
 <div class="row">
-    <% posts.forEach(function(post) { %>
-        <div class="columns col-lg-2 col-md-4 col-sm-6">
-            <div class="card">
-            <img height="150" width="225" class="card-img-top" src=<%=`data:${post.pictureType};charset=utf-8;base64,${post.picture.toString('base64')}`%>>
-            <div class="card-body">
-                <h5 class="card-text"><%=post.date%></h5>
-                <h6 class="card-text"><%=post.title%></h6>
-                <p class="card-text"><%=post.content.substring(0,15)%></p>
-                <div>
-                    <a class="btn btn-sm btn-outline-secondary" href="/posts/<%=post.postID%>">View</a>
-                </div>
-
-            </div>
-            </div>
+  <% posts.forEach(function(post) { %>
+  <div class="columns col-lg-2 col-md-4 col-sm-6">
+    <div class="card">
+      <img height="150" width="225" class="card-img-top"
+      src=<%=`data:${post.pictureType};charset=utf-8;base64,${post.picture.toString('base64')}`%>>
+      <div class="card-body">
+        <h5 class="card-text"><%=post.date%></h5>
+        <h6 class="card-text"><%=post.title%></h6>
+        <p class="card-text"><%=post.content.substring(0,30)%></p>
+        <div>
+          <a
+            class="btn btn-sm btn-outline-secondary"
+            href="/posts/<%=post.postID%>"
+            >View</a
+          >
         </div>
-    <% }) %>
+      </div>
+    </div>
+  </div>
+  <% }) %>
 </div>
 
 <%- include("partials/footer"); -%>
